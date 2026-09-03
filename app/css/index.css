@@ -1,9 +1,9 @@
 .page { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
 
 .brand-row { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
-.brand-row__logo { height: 24px; width: auto; display: block; }
-.brand-row__divider { width: 1px; height: 22px; background: var(--color-border-input); }
-.brand-row__partner-logo { height: 28px; width: auto; display: block; }
+.brand-row__logo { height: 24px; width: auto; display: block; flex-shrink: 0; }
+.brand-row__divider { width: 1px; height: 22px; background: var(--color-border-input); flex-shrink: 0; }
+.brand-row__partner-logo { height: 28px; width: auto; max-width: 100%; display: block; min-width: 0; }
 
 .page-title { font-size: 26px; font-weight: 800; color: var(--color-black); margin-bottom: 6px; }
 .page-subtitle { font-size: 14px; color: var(--color-muted); margin-bottom: 28px; }
