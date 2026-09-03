@@ -111,6 +111,7 @@
 .status-card--activo .status-card__icon { background: var(--color-success); }
 .status-card--activo .status-card__title { color: var(--color-success-dark); }
 .status-card--activo .status-card__details { color: #1F5B3F; }
+.status-card--activo .status-card__message { color: #1F5B3F; }
 .status-card__confirm-local {
   font-size: 12px;
   color: #1F5B3F;
