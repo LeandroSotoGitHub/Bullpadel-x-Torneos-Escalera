@@ -138,3 +138,27 @@
   color: var(--color-muted);
   line-height: 1.5;
 }
+
+/* Vista desktop: la pantalla mobile queda flotando como una tarjeta centrada,
+   en vez de estirarse a lo alto de toda la ventana. */
+@media (min-width: 640px) {
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  .page {
+    min-height: 0;
+    max-height: 88vh;
+    margin: 24px auto;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(15, 15, 1, 0.18);
+  }
+
+  .content {
+    overflow-y: auto;
+  }
+}
