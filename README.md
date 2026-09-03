@@ -15,8 +15,8 @@ Escalera. Contexto completo del proyecto en [`Contexto/context.md`](Contexto/con
 - **Backend:** Supabase (Postgres), proyecto `torneos-escalera-cupones` (org `LeandroSotoGitHub's Org`, región `sa-east-1`).
 - **Control de acceso:** sin sistema de cuentas. Las tablas `coupons`, `redemptions` y
   `app_secrets` tienen RLS habilitado sin políticas (bloqueadas a nivel de base de datos).
-  Todo el acceso pasa por 4 funciones RPC `security definer`:
-  - `crear_cupon` / `listar_cupones` — requieren la clave de acceso MKT.
+  Todo el acceso pasa por 6 funciones RPC `security definer`:
+  - `crear_cupon` / `listar_cupones` / `editar_cupon` / `eliminar_cupon` — requieren la clave de acceso MKT.
   - `validar_cupon` / `confirmar_canje` — sin clave, pero solo devuelven el resultado de un serial puntual (nunca el listado completo).
 
 ## CSS

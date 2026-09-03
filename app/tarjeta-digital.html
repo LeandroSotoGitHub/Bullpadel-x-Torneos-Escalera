@@ -134,6 +134,21 @@
         }
         this.cupon = { ...data[0], serial };
         this.qrSvg = qrSvgParaSerial(serial);
+
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('auto') === '1') {
+          await this.$nextTick();
+          await this.esperarImagenes();
+          this.descargarTarjeta();
+        }
+      },
+
+      async esperarImagenes() {
+        const nodo = this.$refs.tarjeta;
+        const imgs = Array.from(nodo.querySelectorAll('img'));
+        await Promise.all(imgs.map(img => img.complete
+          ? Promise.resolve()
+          : new Promise(resolve => { img.onload = resolve; img.onerror = resolve; })));
       },
 
       async descargarTarjeta() {

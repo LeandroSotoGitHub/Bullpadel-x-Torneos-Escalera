@@ -65,6 +65,7 @@
         <div>Categoría</div>
         <div>Estado</div>
         <div>Canjes</div>
+        <div>Acciones</div>
       </div>
 
       <template x-for="c in cuponesFiltrados" :key="c.id">
@@ -77,6 +78,17 @@
           <div class="row-grid__cell" x-text="c.category"></div>
           <div><span class="estado-badge" :class="'estado-' + c.estado" x-text="c.estado.charAt(0).toUpperCase() + c.estado.slice(1)"></span></div>
           <div class="row-grid__cell" x-text="c.veces_canjeado"></div>
+          <div class="row-actions">
+            <button class="icon-btn" title="Editar" @click="abrirEdicion(c)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="icon-btn" title="Descargar tarjeta" @click="descargarCupon(c)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0-4-4m4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <button class="icon-btn icon-btn--danger" title="Eliminar" @click="eliminarCupon(c)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-.8 12.1a2 2 0 0 1-2 1.9H8.8a2 2 0 0 1-2-1.9L6 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
         </div>
       </template>
 
@@ -87,11 +99,87 @@
   </div>
   </template>
 
+  <!-- Modal de edicion -->
+  <template x-if="editando">
+    <div class="modal-overlay" @click.self="cerrarEdicion()" @keydown.escape.window="cerrarEdicion()">
+      <div class="modal">
+        <div class="modal__header">
+          <div class="modal__title">Editar cupón <span x-text="editando.serial"></span></div>
+          <button class="modal__close" @click="cerrarEdicion()">&times;</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Descuento y vigencia</div>
+          <div class="form-row">
+            <div>
+              <div class="field-label">Descuento (%)</div>
+              <input type="number" min="1" max="100" x-model.number="editDiscountPct" class="field-input">
+            </div>
+            <div class="field--wide">
+              <div class="field-label">Desde</div>
+              <input type="date" x-model="editValidFrom" class="field-input">
+            </div>
+            <div class="field--wide">
+              <div class="field-label">Hasta</div>
+              <input type="date" x-model="editValidTo" class="field-input">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Canal</div>
+          <div class="channel-row">
+            <div class="pill" :class="editChannelWeb ? 'pill-on' : 'pill-off'" @click="editChannelWeb = !editChannelWeb">Web</div>
+            <div class="pill" :class="editChannelLocal ? 'pill-on' : 'pill-off'" @click="toggleEditChannelLocal()">Local</div>
+          </div>
+        </div>
+
+        <div class="card" :class="!editChannelLocal ? 'card--disabled' : ''">
+          <div class="card-title">Punto de venta</div>
+          <div class="field-label" x-show="!editChannelLocal">Solo aplica si el canal incluye Local.</div>
+          <div class="pos-row">
+            <div class="pill" :class="editPosTodos ? 'pill-solid-on' : 'pill-solid-off'" @click="editPosTodos = true">Todos</div>
+            <template x-for="p in puntosDeVenta" :key="p">
+              <div class="pill" :class="(!editPosTodos && editPosSeleccionados.includes(p)) ? 'pill-solid-on' : 'pill-solid-off'"
+                   @click="editPosTodos = false; toggleEditPos(p)" x-text="p"></div>
+            </template>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Categoría de producto</div>
+          <select x-model="editCategory" class="field-input">
+            <template x-for="c in categorias" :key="c">
+              <option :value="c" x-text="c"></option>
+            </template>
+          </select>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Modalidad de uso</div>
+          <div class="toggle-wrap">
+            <div class="toggle-opt" :class="editUsageMode === 'unico_uso' ? 'active' : ''" @click="editUsageMode = 'unico_uso'">Único uso</div>
+            <div class="toggle-opt" :class="editUsageMode === 'reutilizable' ? 'active' : ''" @click="editUsageMode = 'reutilizable'">Reutilizable</div>
+          </div>
+        </div>
+
+        <div x-show="editError" class="text-error" x-text="editError"></div>
+
+        <div class="modal__actions">
+          <button class="btn-secondary" :disabled="editLoading" @click="cerrarEdicion()">Cancelar</button>
+          <button class="btn-primary btn-primary--block" :disabled="editLoading" @click="guardarEdicion()">
+            <span x-text="editLoading ? 'Guardando…' : 'Guardar cambios'"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
+
 </div>
 
 <script type="module">
   import Alpine from 'https://cdn.jsdelivr.net/npm/alpinejs@3/dist/module.esm.js';
-  import { supabase, formatFecha } from './js/supabase-client.js';
+  import { supabase, formatFecha, PUNTOS_DE_VENTA, CATEGORIAS } from './js/supabase-client.js';
   import { getMktKey, setMktKey, esErrorDeAutorizacion } from './js/mkt-key.js';
 
   Alpine.data('listadoCupones', () => ({
@@ -103,6 +191,21 @@
       filtro: 'todos',
       loading: false,
       errorMsg: '',
+
+      puntosDeVenta: PUNTOS_DE_VENTA,
+      categorias: CATEGORIAS,
+      editando: null,
+      editDiscountPct: 0,
+      editValidFrom: '',
+      editValidTo: '',
+      editChannelWeb: true,
+      editChannelLocal: true,
+      editPosTodos: true,
+      editPosSeleccionados: [],
+      editCategory: '',
+      editUsageMode: 'reutilizable',
+      editLoading: false,
+      editError: '',
 
       init() {
         this.mktKey = getMktKey();
@@ -147,6 +250,109 @@
         }
 
         this.cupones = data;
+      },
+
+      descargarCupon(c) {
+        window.open(`tarjeta-digital.html?serial=${encodeURIComponent(c.serial)}&auto=1`, '_blank');
+      },
+
+      async eliminarCupon(c) {
+        const aviso = c.veces_canjeado > 0
+          ? `¿Eliminar el cupón ${c.serial}? Ya tiene ${c.veces_canjeado} canje(s) registrados: también se van a borrar. Esta acción no se puede deshacer.`
+          : `¿Eliminar el cupón ${c.serial}? Esta acción no se puede deshacer.`;
+        if (!window.confirm(aviso)) return;
+
+        this.errorMsg = '';
+        const { error } = await supabase.rpc('eliminar_cupon', { p_mkt_key: this.mktKey, p_id: c.id });
+
+        if (error) {
+          if (esErrorDeAutorizacion(error)) {
+            this.mktKey = '';
+            this.authError = 'Clave incorrecta.';
+          } else {
+            this.errorMsg = error.message;
+          }
+          return;
+        }
+
+        await this.cargar();
+      },
+
+      abrirEdicion(c) {
+        this.editando = c;
+        this.editDiscountPct = c.discount_pct;
+        this.editCategory = c.category;
+        this.editValidFrom = c.valid_from;
+        this.editValidTo = c.valid_to;
+        this.editUsageMode = c.usage_mode;
+        this.editChannelWeb = c.channel.includes('web');
+        this.editChannelLocal = c.channel.includes('local');
+        this.editPosTodos = !c.points_of_sale;
+        this.editPosSeleccionados = c.points_of_sale ? [...c.points_of_sale] : [];
+        this.editError = '';
+      },
+
+      cerrarEdicion() {
+        this.editando = null;
+      },
+
+      toggleEditChannelLocal() {
+        this.editChannelLocal = !this.editChannelLocal;
+        if (!this.editChannelLocal) {
+          this.editPosTodos = true;
+          this.editPosSeleccionados = [];
+        }
+      },
+
+      toggleEditPos(p) {
+        const i = this.editPosSeleccionados.indexOf(p);
+        if (i >= 0) this.editPosSeleccionados.splice(i, 1);
+        else this.editPosSeleccionados.push(p);
+      },
+
+      async guardarEdicion() {
+        this.editLoading = true;
+        this.editError = '';
+
+        const channel = [];
+        if (this.editChannelWeb) channel.push('web');
+        if (this.editChannelLocal) channel.push('local');
+
+        if (channel.length === 0) {
+          this.editLoading = false;
+          this.editError = 'Elegí al menos un canal.';
+          return;
+        }
+
+        const points_of_sale = this.editPosTodos ? null : this.editPosSeleccionados;
+
+        const { error } = await supabase.rpc('editar_cupon', {
+          p_mkt_key: this.mktKey,
+          p_id: this.editando.id,
+          p_discount_pct: this.editDiscountPct,
+          p_category: this.editCategory,
+          p_channel: channel,
+          p_points_of_sale: points_of_sale,
+          p_valid_from: this.editValidFrom,
+          p_valid_to: this.editValidTo,
+          p_usage_mode: this.editUsageMode,
+        });
+
+        this.editLoading = false;
+
+        if (error) {
+          if (esErrorDeAutorizacion(error)) {
+            this.mktKey = '';
+            this.authError = 'Clave incorrecta.';
+            this.editando = null;
+          } else {
+            this.editError = error.message;
+          }
+          return;
+        }
+
+        this.editando = null;
+        await this.cargar();
       },
   }));
 
