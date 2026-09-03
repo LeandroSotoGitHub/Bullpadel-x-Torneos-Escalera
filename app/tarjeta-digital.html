@@ -133,7 +133,8 @@
           return;
         }
         this.cupon = { ...data[0], serial };
-        this.qrSvg = qrSvgParaSerial(serial);
+        const urlValidacion = `${window.location.origin}${window.location.pathname.replace('tarjeta-digital.html', 'validar-cupon.html')}?serial=${encodeURIComponent(serial)}`;
+        this.qrSvg = qrSvgParaSerial(urlValidacion);
 
         const params = new URLSearchParams(window.location.search);
         if (params.get('auto') === '1') {
