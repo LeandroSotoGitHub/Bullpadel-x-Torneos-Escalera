@@ -65,12 +65,13 @@
           <div class="card-title">Canal</div>
           <div class="channel-row">
             <div class="pill" :class="channelWeb ? 'pill-on' : 'pill-off'" @click="channelWeb = !channelWeb">Web</div>
-            <div class="pill" :class="channelLocal ? 'pill-on' : 'pill-off'" @click="channelLocal = !channelLocal">Local</div>
+            <div class="pill" :class="channelLocal ? 'pill-on' : 'pill-off'" @click="toggleChannelLocal()">Local</div>
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" :class="!channelLocal ? 'card--disabled' : ''">
           <div class="card-title">Punto de venta</div>
+          <div class="field-label" x-show="!channelLocal">Solo aplica si el canal incluye Local.</div>
           <div class="pos-row">
             <div class="pill" :class="posTodos ? 'pill-solid-on' : 'pill-solid-off'" @click="posTodos = true">Todos</div>
             <template x-for="p in puntosDeVenta" :key="p">
@@ -185,6 +186,14 @@
         const i = this.posSeleccionados.indexOf(p);
         if (i >= 0) this.posSeleccionados.splice(i, 1);
         else this.posSeleccionados.push(p);
+      },
+
+      toggleChannelLocal() {
+        this.channelLocal = !this.channelLocal;
+        if (!this.channelLocal) {
+          this.posTodos = true;
+          this.posSeleccionados = [];
+        }
       },
 
       fmtCorta: formatFecha,

@@ -39,6 +39,7 @@
   border-radius: 12px;
   padding: 20px;
 }
+.card--disabled { opacity: 0.45; pointer-events: none; }
 .card-title {
   font-size: 12px;
   font-weight: 700;
