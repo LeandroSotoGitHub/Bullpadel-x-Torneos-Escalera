@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/tarjeta-digital.css">
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -26,54 +28,59 @@
 
   <!-- Tarjeta -->
   <template x-if="!loading && cupon">
-    <div class="coupon-card">
+    <div class="coupon-wrap">
 
-      <div class="coupon-card__glow-a"></div>
-      <div class="coupon-card__glow-b"></div>
+      <div class="coupon-card" x-ref="tarjeta">
 
-      <div class="coupon-card__brands">
-        <img src="assets/bullpadel-logo-blanco.png" class="coupon-card__brand-logo">
-        <div class="coupon-card__brand-x">&times;</div>
-        <div class="coupon-card__partner-badge">
-          <img src="assets/logo-torneos-escalera.svg" class="coupon-card__partner-logo">
-        </div>
-      </div>
+        <div class="coupon-card__glow-a"></div>
+        <div class="coupon-card__glow-b"></div>
 
-      <div class="coupon-card__headline">
-        <div class="coupon-card__headline-row">
-          <div class="coupon-card__discount" x-text="cupon.discount_pct + '%'"></div>
-          <div class="coupon-card__off">OFF</div>
-        </div>
-        <div class="coupon-card__category" x-text="'En ' + cupon.category.toLowerCase()"></div>
-      </div>
-
-      <div class="coupon-card__divider"></div>
-
-      <div class="coupon-card__meta">
-        <div class="coupon-card__meta-row"><span class="coupon-card__meta-label">Válido</span><span x-text="fmtCorta(cupon.valid_from) + ' – ' + fmtCompleta(cupon.valid_to)"></span></div>
-        <div class="coupon-card__meta-row"><span class="coupon-card__meta-label">Canal</span><span x-text="cupon.channel.map(c => c === 'web' ? 'Web' : 'Locales').join(' y ')"></span></div>
-        <div class="coupon-card__meta-row"><span class="coupon-card__meta-label">Puntos de venta</span><span class="coupon-card__meta-value--right" x-text="cupon.points_of_sale ? cupon.points_of_sale.join(', ') : 'Unicenter, Portal Palermo, Alcorta'"></span></div>
-      </div>
-
-      <div class="coupon-card__footer">
-        <template x-if="cupon.estado !== 'activo'">
-          <div class="status-banner" :class="cupon.estado === 'vencido' ? 'status-banner--vencido' : 'status-banner--usado'"
-               x-text="cupon.estado === 'vencido' ? 'Este cupón venció' : 'Este cupón ya fue utilizado'"></div>
-        </template>
-        <div class="coupon-card__serial-row">
-          <div class="qr">
-            <template x-for="i in 16" :key="i">
-              <div :class="qrPattern[i-1] ? 'qr__cell--on' : 'qr__cell--off'"></div>
-            </template>
-          </div>
-          <div class="coupon-card__serial-block">
-            <div class="coupon-card__serial" x-text="cupon.serial"></div>
-            <div class="coupon-card__serial-hint">Mostrá este código en caja</div>
+        <div class="coupon-card__brands">
+          <img src="assets/bullpadel-logo-blanco.png" class="coupon-card__brand-logo">
+          <div class="coupon-card__brand-x">&times;</div>
+          <div class="coupon-card__partner-badge">
+            <img src="assets/logo-torneos-escalera.svg" class="coupon-card__partner-logo">
           </div>
         </div>
+
+        <div class="coupon-card__headline">
+          <div class="coupon-card__headline-row">
+            <div class="coupon-card__discount" x-text="cupon.discount_pct + '%'"></div>
+            <div class="coupon-card__off">OFF</div>
+          </div>
+          <div class="coupon-card__category" x-text="'En ' + cupon.category.toLowerCase()"></div>
+        </div>
+
+        <div class="coupon-card__divider"></div>
+
+        <div class="coupon-card__meta">
+          <div class="coupon-card__meta-row"><span class="coupon-card__meta-label">Válido</span><span x-text="fmtCorta(cupon.valid_from) + ' – ' + fmtCompleta(cupon.valid_to)"></span></div>
+          <div class="coupon-card__meta-row"><span class="coupon-card__meta-label">Canal</span><span x-text="cupon.channel.map(c => c === 'web' ? 'Web' : 'Locales').join(' y ')"></span></div>
+          <div class="coupon-card__meta-row"><span class="coupon-card__meta-label">Puntos de venta</span><span class="coupon-card__meta-value--right" x-text="cupon.points_of_sale ? cupon.points_of_sale.join(', ') : 'Unicenter, Portal Palermo, Alcorta'"></span></div>
+        </div>
+
+        <div class="coupon-card__footer">
+          <template x-if="cupon.estado !== 'activo'">
+            <div class="status-banner" :class="cupon.estado === 'vencido' ? 'status-banner--vencido' : 'status-banner--usado'"
+                 x-text="cupon.estado === 'vencido' ? 'Este cupón venció' : 'Este cupón ya fue utilizado'"></div>
+          </template>
+          <div class="coupon-card__serial-row">
+            <div class="qr" x-html="qrSvg" role="img" :aria-label="'Código QR del cupón ' + cupon.serial"></div>
+            <div class="coupon-card__serial-block">
+              <div class="coupon-card__serial" x-text="cupon.serial"></div>
+              <div class="coupon-card__serial-hint">Escaneá o mostrá este código en caja</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="coupon-card__legal">Válido en bullpadel.com.ar y en los locales físicos de Bullpadel Argentina. Cupón intransferible.</div>
+
       </div>
 
-      <div class="coupon-card__legal">Válido en bullpadel.com.ar y en los locales físicos de Bullpadel Argentina. Cupón intransferible.</div>
+      <button class="btn-download" :disabled="descargando" @click="descargarTarjeta()">
+        <span x-text="descargando ? 'Generando imagen…' : '⤓ Descargar / compartir'"></span>
+      </button>
+      <div x-show="descargaError" class="text-error" x-text="descargaError"></div>
 
     </div>
   </template>
@@ -84,15 +91,30 @@
   import Alpine from 'https://cdn.jsdelivr.net/npm/alpinejs@3/dist/module.esm.js';
   import { supabase, formatFecha, formatFechaCompleta } from './js/supabase-client.js';
 
+  function qrSvgParaSerial(serial) {
+    const qr = window.qrcode(0, 'M');
+    qr.addData(serial);
+    qr.make();
+    const count = qr.getModuleCount();
+    let rects = '';
+    for (let row = 0; row < count; row++) {
+      for (let col = 0; col < count; col++) {
+        if (qr.isDark(row, col)) rects += `<rect x="${col}" y="${row}" width="1" height="1"/>`;
+      }
+    }
+    return `<svg viewBox="0 0 ${count} ${count}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" fill="#0f0f01" width="100%" height="100%">${rects}</svg>`;
+  }
+
   Alpine.data('tarjetaDigital', () => ({
       cupon: null,
       loading: true,
-      qrPattern: [],
+      qrSvg: '',
+      descargando: false,
+      descargaError: '',
 
       init() {
         const params = new URLSearchParams(window.location.search);
         const serial = (params.get('serial') || '').trim().toUpperCase();
-        this.qrPattern = Array.from({ length: 16 }, () => Math.random() > 0.5);
         if (!serial) {
           this.loading = false;
           return;
@@ -111,6 +133,47 @@
           return;
         }
         this.cupon = { ...data[0], serial };
+        this.qrSvg = qrSvgParaSerial(serial);
+      },
+
+      async descargarTarjeta() {
+        this.descargando = true;
+        this.descargaError = '';
+
+        try {
+          const nodo = this.$refs.tarjeta;
+          const canvas = await window.html2canvas(nodo, { backgroundColor: null, scale: 2 });
+          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+          const nombreArchivo = `cupon-${this.cupon.serial}.png`;
+          const archivo = new File([blob], nombreArchivo, { type: 'image/png' });
+
+          if (navigator.canShare && navigator.canShare({ files: [archivo] })) {
+            try {
+              await navigator.share({
+                files: [archivo],
+                title: 'Tu cupón Bullpadel x Torneos Escalera',
+                text: `Cupón ${this.cupon.serial}`,
+              });
+              return;
+            } catch (err) {
+              if (err && err.name === 'AbortError') return; // el usuario cerro el share sheet
+              // si el share falla por otro motivo, seguimos a la descarga directa
+            }
+          }
+
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = nombreArchivo;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          this.descargaError = 'No se pudo generar la imagen. Probá de nuevo.';
+        } finally {
+          this.descargando = false;
+        }
       },
   }));
 
