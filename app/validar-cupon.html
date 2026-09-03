@@ -151,13 +151,6 @@
           const saved = localStorage.getItem(POS_STORAGE_KEY);
           if (saved && this.puntosDeVenta.includes(saved)) this.puntoVenta = saved;
         } catch {}
-
-        const params = new URLSearchParams(window.location.search);
-        const serialDesdeQr = (params.get('serial') || '').trim();
-        if (serialDesdeQr) {
-          this.serial = serialDesdeQr.toUpperCase();
-          this.intentarValidar();
-        }
       },
 
       abrirModalLocal() {

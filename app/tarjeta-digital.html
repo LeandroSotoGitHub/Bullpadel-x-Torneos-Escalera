@@ -133,8 +133,10 @@
           return;
         }
         this.cupon = { ...data[0], serial };
-        const urlValidacion = `${window.location.origin}${window.location.pathname.replace('tarjeta-digital.html', 'validar-cupon.html')}?serial=${encodeURIComponent(serial)}`;
-        this.qrSvg = qrSvgParaSerial(urlValidacion);
+        // El QR codifica solo el serial (texto plano), nunca un link al portal:
+        // si abriera validar-cupon.html directo, cualquiera que lo escanee con la
+        // camara del celular caeria en la herramienta de validacion sin ser vendedor.
+        this.qrSvg = qrSvgParaSerial(serial);
 
         const params = new URLSearchParams(window.location.search);
         if (params.get('auto') === '1') {
