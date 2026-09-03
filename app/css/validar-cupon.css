@@ -10,6 +10,7 @@
 .header {
   padding: 20px 20px 16px 20px;
   background: var(--color-black);
+  color-scheme: dark;
 }
 .header__logo { height: 18px; width: auto; display: block; margin-bottom: 10px; }
 .header__title { font-size: 20px; font-weight: 800; color: var(--color-white); }

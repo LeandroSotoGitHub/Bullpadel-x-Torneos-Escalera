@@ -24,6 +24,7 @@
   max-width: 380px;
   aspect-ratio: 380 / 600;
   border-radius: 22px;
+  color-scheme: dark;
   background: linear-gradient(165deg, #0f0f01 0%, #17140F 55%, #1D1913 100%);
   padding: 26px;
   display: flex;

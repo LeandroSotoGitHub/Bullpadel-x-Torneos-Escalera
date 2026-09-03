@@ -34,14 +34,15 @@
 
 .preview-card {
   background: var(--color-black);
+  color-scheme: dark;
   border-radius: 16px;
-  padding: 22px 18px;
+  padding: 24px 20px;
   color: var(--color-white);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
-.preview-card__logo { height: 14px; width: auto; display: block; }
+.preview-card__logo { height: 20px; width: auto; display: block; }
 .preview-card__discount { font-size: 38px; font-weight: 800; line-height: 1; }
 .preview-card__category { font-size: 13px; color: #C9CDD3; }
 .preview-card__divider { height: 1px; background: rgba(255,255,255,0.14); }
