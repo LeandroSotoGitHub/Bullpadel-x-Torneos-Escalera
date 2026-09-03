@@ -55,7 +55,11 @@
           <div x-text="'Válido hasta ' + fmtCompleta(cupon.valid_to)"></div>
         </div>
         <div class="status-card__confirm-local">Se va a registrar en <strong x-text="puntoVenta"></strong></div>
-        <div class="btn-confirm" :class="canjeando ? 'btn-confirm--loading' : ''" @click="confirmarCanje()">
+        <div>
+          <div class="field-label field-label--dark">N° de factura</div>
+          <input type="text" x-model="numeroFactura" placeholder="0001-00012345" class="invoice-input" @keydown.enter="confirmarCanje()">
+        </div>
+        <div class="btn-confirm" :class="(canjeando || !numeroFactura.trim()) ? 'btn-confirm--loading' : ''" @click="confirmarCanje()">
           <span x-text="canjeando ? 'Registrando…' : 'Confirmar canje'"></span>
         </div>
       </div>
@@ -139,6 +143,7 @@
       mostrarModalLocal: false,
       accionPendiente: null,
       serial: '',
+      numeroFactura: '',
       cupon: null,
       noEncontrado: false,
       validando: false,
@@ -187,6 +192,7 @@
         this.cupon = null;
         this.noEncontrado = false;
         this.canjeConfirmado = false;
+        this.numeroFactura = '';
 
         const serialLimpio = this.serial.trim().toUpperCase();
         const { data, error } = await supabase.rpc('validar_cupon', { p_serial: serialLimpio });
@@ -205,12 +211,19 @@
       },
 
       async confirmarCanje() {
+        if (!this.numeroFactura.trim()) {
+          this.errorMsg = 'Ingresá el número de factura para confirmar el canje.';
+          return;
+        }
+
         this.canjeando = true;
+        this.errorMsg = '';
         const serialLimpio = this.serial.trim().toUpperCase();
 
         const { data, error } = await supabase.rpc('confirmar_canje', {
           p_serial: serialLimpio,
           p_point_of_sale: this.puntoVenta,
+          p_numero_factura: this.numeroFactura.trim(),
         });
 
         this.canjeando = false;

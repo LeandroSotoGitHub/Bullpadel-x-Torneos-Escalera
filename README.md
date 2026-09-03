@@ -15,9 +15,9 @@ Escalera. Contexto completo del proyecto en [`Contexto/context.md`](Contexto/con
 - **Backend:** Supabase (Postgres), proyecto `torneos-escalera-cupones` (org `LeandroSotoGitHub's Org`, región `sa-east-1`).
 - **Control de acceso:** sin sistema de cuentas. Las tablas `coupons`, `redemptions` y
   `app_secrets` tienen RLS habilitado sin políticas (bloqueadas a nivel de base de datos).
-  Todo el acceso pasa por 7 funciones RPC `security definer`:
-  - `crear_cupon` / `crear_cupones_lote` / `listar_cupones` / `editar_cupon` / `eliminar_cupon` — requieren la clave de acceso MKT.
-  - `validar_cupon` / `confirmar_canje` — sin clave, pero solo devuelven el resultado de un serial puntual (nunca el listado completo).
+  Todo el acceso pasa por 8 funciones RPC `security definer`:
+  - `crear_cupon` / `crear_cupones_lote` / `listar_cupones` / `editar_cupon` / `eliminar_cupon` / `listar_canjes` — requieren la clave de acceso MKT.
+  - `validar_cupon` / `confirmar_canje` — sin clave, pero solo devuelven el resultado de un serial puntual (nunca el listado completo). `confirmar_canje` exige numero de factura, sin eso rechaza el canje.
 
 ## CSS
 
@@ -46,6 +46,17 @@ condiciones, serial propio cada uno) y descargarlos todos juntos como un
 `.zip` de tarjetas PNG. El ZIP se arma en el navegador con JSZip, reusando
 `tarjeta-digital.html` — se carga un serial por vez en un iframe oculto y se
 reaprovecha su mismo render de tarjeta + QR (evita duplicar esa lógica).
+
+`validar-cupon.html` exige elegir el local (modal obligatorio, no se puede
+cerrar sin elegir uno) y cargar el número de factura antes de poder confirmar
+un canje. Esos dos datos quedan grabados en `redemptions` junto con la fecha.
+Desde `listado-cupones.html`, el número de canjes de cada cupón es un link
+que abre el detalle (local + factura + fecha/hora de cada canje individual).
+
+El QR de `tarjeta-digital.html` codifica **solo el serial en texto plano**
+(pensado para un lector/pistola en caja) — nunca un link a ninguna pantalla
+interna, para que no sea posible abrir el portal de validación escaneándolo
+con la cámara de un celular.
 
 ## Correr local
 

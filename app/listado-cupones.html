@@ -81,7 +81,10 @@
           <div class="row-grid__cell" x-text="c.points_of_sale ? c.points_of_sale.join(', ') : 'Todos'"></div>
           <div class="row-grid__cell" x-text="c.category"></div>
           <div><span class="estado-badge" :class="'estado-' + c.estado" x-text="c.estado.charAt(0).toUpperCase() + c.estado.slice(1)"></span></div>
-          <div class="row-grid__cell" x-text="c.veces_canjeado"></div>
+          <div>
+            <span class="canjes-count" :class="c.veces_canjeado > 0 ? 'canjes-count--link' : ''"
+                  @click="c.veces_canjeado > 0 && verCanjes(c)" x-text="c.veces_canjeado"></span>
+          </div>
           <div class="row-actions">
             <button class="icon-btn" title="Editar" @click="abrirEdicion(c)">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -179,11 +182,38 @@
     </div>
   </template>
 
+  <!-- Modal de detalle de canjes -->
+  <template x-if="detalleCupon">
+    <div class="modal-overlay" @click.self="cerrarDetalleCanjes()" @keydown.escape.window="cerrarDetalleCanjes()">
+      <div class="modal">
+        <div class="modal__header">
+          <div class="modal__title">Canjes de <span x-text="detalleCupon.serial"></span></div>
+          <button class="modal__close" @click="cerrarDetalleCanjes()">&times;</button>
+        </div>
+
+        <div x-show="detalleLoading" class="loading-state">Cargando…</div>
+
+        <div x-show="!detalleLoading" class="canjes-list">
+          <template x-for="(canje, i) in detalleCanjes" :key="i">
+            <div class="canjes-list__item">
+              <div class="canjes-list__row">
+                <span class="canjes-list__local" x-text="canje.point_of_sale"></span>
+                <span x-text="fmtFechaHora(canje.redeemed_at)"></span>
+              </div>
+              <div class="canjes-list__factura">N° de factura: <strong x-text="canje.numero_factura || '—'"></strong></div>
+            </div>
+          </template>
+          <div x-show="detalleCanjes.length === 0" class="empty-state">Sin canjes registrados.</div>
+        </div>
+      </div>
+    </div>
+  </template>
+
 </div>
 
 <script type="module">
   import Alpine from 'https://cdn.jsdelivr.net/npm/alpinejs@3/dist/module.esm.js';
-  import { supabase, formatFecha, PUNTOS_DE_VENTA, CATEGORIAS } from './js/supabase-client.js';
+  import { supabase, formatFecha, formatFechaHora, PUNTOS_DE_VENTA, CATEGORIAS } from './js/supabase-client.js';
   import { getMktKey, setMktKey, esErrorDeAutorizacion } from './js/mkt-key.js';
 
   Alpine.data('listadoCupones', () => ({
@@ -211,6 +241,10 @@
       editLoading: false,
       editError: '',
 
+      detalleCupon: null,
+      detalleCanjes: [],
+      detalleLoading: false,
+
       init() {
         this.mktKey = getMktKey();
         if (this.mktKey) this.cargar();
@@ -225,6 +259,7 @@
       },
 
       fmtCorta: formatFecha,
+      fmtFechaHora: formatFechaHora,
 
       get cuponesFiltrados() {
         return this.cupones.filter(c => {
@@ -258,6 +293,33 @@
 
       descargarCupon(c) {
         window.open(`tarjeta-digital.html?serial=${encodeURIComponent(c.serial)}&auto=1`, '_blank');
+      },
+
+      async verCanjes(c) {
+        this.detalleCupon = c;
+        this.detalleCanjes = [];
+        this.detalleLoading = true;
+
+        const { data, error } = await supabase.rpc('listar_canjes', { p_mkt_key: this.mktKey, p_coupon_id: c.id });
+
+        this.detalleLoading = false;
+
+        if (error) {
+          if (esErrorDeAutorizacion(error)) {
+            this.mktKey = '';
+            this.authError = 'Clave incorrecta.';
+            this.detalleCupon = null;
+          } else {
+            this.errorMsg = error.message;
+          }
+          return;
+        }
+
+        this.detalleCanjes = data;
+      },
+
+      cerrarDetalleCanjes() {
+        this.detalleCupon = null;
       },
 
       async eliminarCupon(c) {

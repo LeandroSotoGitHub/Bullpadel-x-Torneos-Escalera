@@ -65,6 +65,32 @@
 
 .footnote { font-size: 12px; color: var(--color-muted); margin-top: 14px; }
 
+.canjes-count { font-size: 13px; color: var(--color-black); }
+.canjes-count--link {
+  color: var(--color-red);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.canjes-list { display: flex; flex-direction: column; gap: 10px; max-height: 60vh; overflow-y: auto; }
+.canjes-list__item {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.canjes-list__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-black);
+  margin-bottom: 4px;
+}
+.canjes-list__local { color: var(--color-red); }
+.canjes-list__factura { font-size: 12px; color: var(--color-muted); }
+
 .row-actions { display: flex; gap: 6px; }
 .icon-btn {
   width: 28px;
