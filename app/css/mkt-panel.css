@@ -1,0 +1,113 @@
+/* Compartido entre crear-cupon.html y listado-cupones.html */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.topbar__logo { height: 22px; width: auto; display: block; }
+.topbar__divider { width: 1px; height: 20px; background: var(--color-border-input); }
+.topbar__brand { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: var(--color-muted); }
+.topbar__tag {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-muted);
+  background: var(--color-bg);
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.key-gate {
+  max-width: 420px;
+  margin: 60px auto;
+  text-align: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.key-gate__title { font-size: 18px; font-weight: 800; color: var(--color-black); margin-bottom: 6px; }
+.key-gate__subtitle { font-size: 13px; color: var(--color-muted); margin-bottom: 16px; }
+.key-gate__input { width: 100%; margin-bottom: 12px; }
+.key-gate__error { color: var(--color-danger); font-size: 12px; margin-top: 10px; }
+
+.card {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.card-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-black);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+.field-label { font-size: 12px; color: var(--color-muted); margin-bottom: 6px; }
+.field-input {
+  width: 100%;
+  border: 1px solid var(--color-border-input);
+  border-radius: 8px;
+  padding: 9px 12px;
+  background: var(--color-input-bg);
+  font-size: 14px;
+  color: var(--color-black);
+}
+
+.pill {
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  user-select: none;
+  white-space: nowrap;
+}
+.pill-off { background: #F2F3F5; color: var(--color-muted); }
+.pill-on { background: #FBE9EB; border-color: var(--color-red); color: var(--color-red); }
+.pill-solid-on { background: var(--color-red); color: var(--color-white); }
+.pill-solid-off { background: #F2F3F5; color: var(--color-muted); }
+
+.btn-primary {
+  background: var(--color-red);
+  color: var(--color-white);
+  text-align: center;
+  padding: 11px 18px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+}
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Variante de bloque: botones grandes de ancho completo (formularios, porton de clave) */
+.btn-primary--block {
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  font-size: 14px;
+  white-space: normal;
+}
+
+.toggle-wrap {
+  display: flex;
+  gap: 8px;
+  background: #F2F3F5;
+  padding: 4px;
+  border-radius: 10px;
+  width: fit-content;
+}
+.toggle-opt { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--color-muted); cursor: pointer; }
+.toggle-opt.active {
+  background: var(--color-white);
+  box-shadow: 0 1px 2px rgba(15,15,1,0.14);
+  font-weight: 700;
+  color: var(--color-black);
+}

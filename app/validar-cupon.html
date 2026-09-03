@@ -5,24 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Validar cupón — Torneos Escalera x Bullpadel</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
-<style>
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: 'Manrope', system-ui, -apple-system, sans-serif; background: #EEF0F2; }
-  .field-input { border: 1.5px solid #0f0f01; border-radius: 10px; padding: 13px 14px; background: #ffffff; font-size: 15px; font-family: monospace; font-weight: 700; color: #0f0f01; width: 100%; }
-  .btn-primary { text-align: center; background: #C8102E; color: #ffffff; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; width: 100%; }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-  select.pos-select { background: transparent; color: #C9CDD3; border: none; font-size: 12px; font-family: inherit; }
-  select.pos-select option { color: #0f0f01; }
-</style>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/validar-cupon.css">
 </head>
 <body>
 
-<div x-data="validarCupon()" x-init="init()" style="max-width:420px; margin:0 auto; min-height:100vh; background:#F7F8FA; display:flex; flex-direction:column;">
+<div x-data="validarCupon()" x-init="init()" class="page">
 
-  <div style="padding:20px 20px 16px 20px; background:#0f0f01;">
-    <img src="assets/bullpadel-logo-blanco.png" style="height:18px; width:auto; display:block; margin-bottom:10px;">
-    <div style="font-size:20px; font-weight:800; color:#ffffff;">Validar cupón</div>
-    <div style="font-size:12px; color:#C9CDD3; margin-top:2px; display:flex; align-items:center; gap:4px;">
+  <div class="header">
+    <img src="assets/bullpadel-logo-blanco.png" class="header__logo">
+    <div class="header__title">Validar cupón</div>
+    <div class="header__subtitle">
       Local:
       <select class="pos-select" x-model="puntoVenta" @change="guardarPuntoVenta()">
         <template x-for="p in puntosDeVenta" :key="p">
@@ -33,37 +26,37 @@
     </div>
   </div>
 
-  <div style="padding:20px; display:flex; flex-direction:column; gap:14px; flex-grow:1;">
+  <div class="content">
 
     <div>
-      <div style="font-size:12px; color:#6B7280; margin-bottom:6px; font-weight:600;">Serial del cupón</div>
-      <input type="text" x-model="serial" @keydown.enter="validar()" placeholder="BP-2609-A1" class="field-input" style="text-transform:uppercase;">
+      <div class="field-label">Serial del cupón</div>
+      <input type="text" x-model="serial" @keydown.enter="validar()" placeholder="BP-2609-A1" class="serial-input">
     </div>
 
     <button class="btn-primary" :disabled="!serial || validando" @click="validar()">
       <span x-text="validando ? 'Validando…' : 'Validar'"></span>
     </button>
 
-    <div x-show="errorMsg" style="color:#C0392B; font-size:13px;" x-text="errorMsg"></div>
+    <div x-show="errorMsg" class="text-error" x-text="errorMsg"></div>
 
-    <div style="height:1px; background:#E1E4E9; margin:6px 0;" x-show="cupon"></div>
+    <div class="divider" x-show="cupon"></div>
 
     <!-- Estado: activo -->
     <template x-if="cupon && cupon.estado === 'activo'">
-      <div style="border:1.5px solid #1E8E5A; background:#E6F6EC; border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:12px;">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <div style="width:34px; height:34px; border-radius:999px; background:#1E8E5A; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+      <div class="status-card status-card--activo">
+        <div class="status-card__head">
+          <div class="status-card__icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13L10 18L19 7" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
-          <div style="font-size:16px; font-weight:800; color:#166A44;">Cupón activo</div>
+          <div class="status-card__title">Cupón activo</div>
         </div>
-        <div style="display:flex; flex-direction:column; gap:6px; font-size:13px; color:#1F5B3F;">
+        <div class="status-card__details">
           <div><strong x-text="cupon.discount_pct + '%'"></strong> OFF &middot; <span x-text="cupon.category"></span></div>
           <div x-text="'Canal: ' + cupon.channel.map(c => c === 'web' ? 'Web' : 'Local').join(' + ') + ' · ' + (cupon.points_of_sale ? cupon.points_of_sale.join(', ') : 'Todos los locales')"></div>
           <div x-text="(cupon.usage_mode === 'reutilizable' ? 'Reutilizable' : 'Único uso')"></div>
           <div x-text="'Válido hasta ' + fmtCompleta(cupon.valid_to)"></div>
         </div>
-        <div class="btn-primary" style="background:#1E8E5A; margin-top:4px;" :style="canjeando ? 'opacity:.6' : ''" @click="confirmarCanje()">
+        <div class="btn-confirm" :class="canjeando ? 'btn-confirm--loading' : ''" @click="confirmarCanje()">
           <span x-text="canjeando ? 'Registrando…' : 'Confirmar canje'"></span>
         </div>
       </div>
@@ -71,47 +64,47 @@
 
     <!-- Estado: vencido -->
     <template x-if="cupon && cupon.estado === 'vencido'">
-      <div style="border:1.5px solid #C0392B; background:#FBEAE8; border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:12px;">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <div style="width:34px; height:34px; border-radius:999px; background:#C0392B; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+      <div class="status-card status-card--vencido">
+        <div class="status-card__head">
+          <div class="status-card__icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#ffffff" stroke-width="2.2"/><path d="M12 8V12L14.5 14.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/></svg>
           </div>
-          <div style="font-size:16px; font-weight:800; color:#8E2A20;">Cupón vencido</div>
+          <div class="status-card__title">Cupón vencido</div>
         </div>
-        <div style="font-size:13px; color:#8E2A20;" x-text="'Venció el ' + fmtCompleta(cupon.valid_to) + '. No corresponde aplicar el descuento.'"></div>
-        <div style="text-align:center; background:#E3C9C6; color:#8E2A20; padding:12px; border-radius:9px; font-size:14px; font-weight:700; margin-top:4px;">No se puede canjear</div>
+        <div class="status-card__message" x-text="'Venció el ' + fmtCompleta(cupon.valid_to) + '. No corresponde aplicar el descuento.'"></div>
+        <div class="status-card__blocked">No se puede canjear</div>
       </div>
     </template>
 
     <!-- Estado: usado -->
     <template x-if="cupon && cupon.estado === 'usado'">
-      <div style="border:1.5px solid #9AA1AC; background:#EEF0F2; border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:12px;">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <div style="width:34px; height:34px; border-radius:999px; background:#6B7280; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+      <div class="status-card status-card--usado">
+        <div class="status-card__head">
+          <div class="status-card__icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#ffffff" stroke-width="2.2"/><path d="M7 7L17 17" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/></svg>
           </div>
-          <div style="font-size:16px; font-weight:800; color:#3F4650;">Cupón ya utilizado</div>
+          <div class="status-card__title">Cupón ya utilizado</div>
         </div>
-        <div style="font-size:13px; color:#3F4650;">Este cupón ya fue canjeado y es de único uso.</div>
-        <div style="text-align:center; background:#DADEE2; color:#3F4650; padding:12px; border-radius:9px; font-size:14px; font-weight:700; margin-top:4px;">No se puede canjear</div>
+        <div class="status-card__message">Este cupón ya fue canjeado y es de único uso.</div>
+        <div class="status-card__blocked">No se puede canjear</div>
       </div>
     </template>
 
     <!-- No encontrado -->
     <template x-if="noEncontrado">
-      <div style="border:1.5px solid #9AA1AC; background:#EEF0F2; border-radius:14px; padding:18px; font-size:13px; color:#3F4650; text-align:center;">
+      <div class="status-card--not-found">
         No existe un cupón con ese serial. Verificá que esté bien escrito.
       </div>
     </template>
 
     <!-- Canje confirmado (toast simple) -->
-    <div x-show="canjeConfirmado" style="border:1.5px solid #1E8E5A; background:#E6F6EC; border-radius:10px; padding:12px; font-size:13px; color:#166A44; text-align:center; font-weight:700;">
+    <div x-show="canjeConfirmado" class="toast-success">
       Canje registrado correctamente.
     </div>
 
   </div>
 
-  <div style="padding:16px 20px; border-top:1px solid #E1E4E9; font-size:11px; color:#6B7280; line-height:1.5;">
+  <div class="footer">
     El vendedor solo valida. La carga del % en el ERP la confirma el encargado habilitado.
   </div>
 

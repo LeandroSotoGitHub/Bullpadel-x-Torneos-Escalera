@@ -1,0 +1,71 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header-block {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.header-block__title { font-size: 26px; font-weight: 800; color: var(--color-black); }
+.header-block__subtitle { font-size: 14px; color: var(--color-muted); margin-top: 4px; }
+
+.toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+.toolbar__search { flex: 1 1 220px; width: 100%; }
+
+.loading-state { padding: 24px; text-align: center; color: var(--color-muted); }
+.error-state { padding: 12px; font-size: 13px; }
+
+.table-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  flex-grow: 1;
+  overflow-x: auto;
+}
+
+.row-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 0.8fr 1.3fr 1fr 1.3fr 1fr 0.9fr 0.7fr;
+  gap: 0;
+  align-items: center;
+  min-width: 760px;
+}
+.row-grid--head {
+  background: #F2F3F5;
+  padding: 12px 18px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.row-grid--body {
+  padding: 14px 18px;
+  border-top: 1px solid var(--color-bg);
+}
+.row-grid__cell { font-size: 13px; color: var(--color-black); }
+.row-grid__cell--serial { font-family: monospace; font-weight: 700; }
+
+.estado-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; display: inline-block; }
+.estado-activo { color: var(--color-success); background: var(--color-success-bg); }
+.estado-vencido { color: var(--color-danger); background: var(--color-danger-bg); }
+.estado-usado { color: var(--color-muted); background: var(--color-neutral-bg); }
+
+.empty-state { padding: 24px; text-align: center; color: var(--color-muted); font-size: 13px; }
+
+.footnote { font-size: 12px; color: var(--color-muted); margin-top: 14px; }
+
+@media (max-width: 900px) {
+  .row-grid { grid-template-columns: 1fr; gap: 4px; }
+  .row-grid--body { padding-bottom: 14px !important; }
+}

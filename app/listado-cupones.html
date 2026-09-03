@@ -5,59 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cupones generados — Torneos Escalera x Bullpadel</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
-<style>
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: 'Manrope', system-ui, -apple-system, sans-serif; background: #EEF0F2; }
-  a { color: #C8102E; text-decoration: none; }
-  a:hover { color: #A10D25; }
-  input { font-family: inherit; }
-  .field-input { border: 1px solid #D6DAE1; border-radius: 8px; padding: 9px 12px; background: #FBFBFC; font-size: 14px; color: #0f0f01; }
-  .pill { padding: 9px 16px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
-  .pill-on { background: #C8102E; color: #ffffff; }
-  .pill-off { background: #ffffff; border: 1px solid #D6DAE1; color: #6B7280; font-weight: 600; }
-  .btn-primary { background: #C8102E; color: #ffffff; padding: 11px 18px; border-radius: 9px; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; border: none; }
-  .estado-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; display: inline-block; }
-  .estado-activo { color: #1E8E5A; background: #E6F6EC; }
-  .estado-vencido { color: #C0392B; background: #FBEAE8; }
-  .estado-usado { color: #6B7280; background: #EEF0F2; }
-  .row-grid { display: grid; grid-template-columns: 1.3fr 0.8fr 1.3fr 1fr 1.3fr 1fr 0.9fr 0.7fr; gap: 0; align-items: center; }
-  @media (max-width: 900px) { .row-grid { grid-template-columns: 1fr; gap: 4px; padding-bottom: 14px !important; } }
-</style>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/mkt-panel.css">
+<link rel="stylesheet" href="css/listado-cupones.css">
 </head>
 <body>
 
-<div x-data="listadoCupones()" x-init="init()" style="max-width:1200px; margin:0 auto; padding:32px 24px; min-height:100vh; display:flex; flex-direction:column;">
+<div x-data="listadoCupones()" x-init="init()" class="page">
 
-  <div style="display:flex; align-items:center; gap:12px; margin-bottom:22px;">
-    <img src="assets/bullpadel-logo-negro.png" style="height:22px; width:auto; display:block;">
-    <div style="width:1px; height:20px; background:#D6DAE1;"></div>
-    <div style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:#6B7280;">&times; Torneos Escalera</div>
-    <div style="margin-left:auto; font-size:12px; font-weight:600; color:#6B7280; background:#EEF0F2; padding:6px 12px; border-radius:999px;">Panel interno &middot; MKT</div>
+  <div class="topbar">
+    <img src="assets/bullpadel-logo-negro.png" class="topbar__logo">
+    <div class="topbar__divider"></div>
+    <div class="topbar__brand">&times; Torneos Escalera</div>
+    <div class="topbar__tag">Panel interno &middot; MKT</div>
   </div>
 
   <template x-if="!mktKey">
-    <div style="max-width:420px; margin:60px auto; text-align:center; background:#fff; border:1px solid #E1E4E9; border-radius:12px; padding:20px;">
-      <div style="font-size:18px; font-weight:800; color:#0f0f01; margin-bottom:6px;">Acceso MKT / comercial</div>
-      <div style="font-size:13px; color:#6B7280; margin-bottom:16px;">Ingresá la clave de acceso para ver el listado.</div>
-      <input type="password" x-model="keyInput" @keydown.enter="guardarKey()" placeholder="Clave de acceso" class="field-input" style="width:100%; margin-bottom:12px;">
-      <div class="btn-primary" style="width:100%; text-align:center;" @click="guardarKey()">Ingresar</div>
-      <div x-show="authError" style="color:#C0392B; font-size:12px; margin-top:10px;" x-text="authError"></div>
+    <div class="key-gate">
+      <div class="key-gate__title">Acceso MKT / comercial</div>
+      <div class="key-gate__subtitle">Ingresá la clave de acceso para ver el listado.</div>
+      <input type="password" x-model="keyInput" @keydown.enter="guardarKey()" placeholder="Clave de acceso" class="field-input key-gate__input">
+      <div class="btn-primary btn-primary--block" @click="guardarKey()">Ingresar</div>
+      <div x-show="authError" class="key-gate__error" x-text="authError"></div>
     </div>
   </template>
 
   <template x-if="mktKey">
   <div>
-    <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+    <div class="header-block">
       <div>
-        <div style="font-size:26px; font-weight:800; color:#0f0f01;">Cupones generados</div>
-        <div style="font-size:14px; color:#6B7280; margin-top:4px;">Listado completo, visible solo para MKT y comercial.</div>
+        <div class="header-block__title">Cupones generados</div>
+        <div class="header-block__subtitle">Listado completo, visible solo para MKT y comercial.</div>
       </div>
       <a href="crear-cupon.html" class="btn-primary">+ Nuevo cupón</a>
     </div>
 
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
-      <div style="flex:1 1 220px;">
-        <input type="text" x-model="busqueda" placeholder="Buscar por serial o categoría" class="field-input" style="width:100%;">
+    <div class="toolbar">
+      <div class="toolbar__search">
+        <input type="text" x-model="busqueda" placeholder="Buscar por serial o categoría" class="field-input">
       </div>
       <div class="pill" :class="filtro === 'todos' ? 'pill-on' : 'pill-off'" @click="filtro = 'todos'">Todos</div>
       <div class="pill" :class="filtro === 'activo' ? 'pill-on' : 'pill-off'" @click="filtro = 'activo'">Activos</div>
@@ -65,12 +50,12 @@
       <div class="pill" :class="filtro === 'usado' ? 'pill-on' : 'pill-off'" @click="filtro = 'usado'">Usados</div>
     </div>
 
-    <div x-show="loading" style="padding:24px; text-align:center; color:#6B7280;">Cargando…</div>
-    <div x-show="errorMsg" style="padding:12px; color:#C0392B; font-size:13px;" x-text="errorMsg"></div>
+    <div x-show="loading" class="loading-state">Cargando…</div>
+    <div x-show="errorMsg" class="error-state text-error" x-text="errorMsg"></div>
 
-    <div x-show="!loading" style="background:#ffffff; border:1px solid #E1E4E9; border-radius:12px; overflow:hidden; flex-grow:1; overflow-x:auto;">
+    <div x-show="!loading" class="table-card">
 
-      <div class="row-grid" style="background:#F2F3F5; padding:12px 18px; font-size:11px; font-weight:700; color:#6B7280; text-transform:uppercase; letter-spacing:0.03em; min-width:760px;">
+      <div class="row-grid row-grid--head">
         <div>Serial</div>
         <div>Descuento</div>
         <div>Vigencia</div>
@@ -82,22 +67,22 @@
       </div>
 
       <template x-for="c in cuponesFiltrados" :key="c.id">
-        <div class="row-grid" style="padding:14px 18px; border-top:1px solid #EEF0F2; min-width:760px;">
-          <div style="font-family:monospace; font-size:13px; color:#0f0f01; font-weight:700;" x-text="c.serial"></div>
-          <div style="font-size:13px; color:#0f0f01;" x-text="c.discount_pct + '%'"></div>
-          <div style="font-size:13px; color:#0f0f01;" x-text="fmtCorta(c.valid_from) + ' – ' + fmtCorta(c.valid_to)"></div>
-          <div style="font-size:13px; color:#0f0f01;" x-text="c.channel.map(ch => ch === 'web' ? 'Web' : 'Local').join(' + ')"></div>
-          <div style="font-size:13px; color:#0f0f01;" x-text="c.points_of_sale ? c.points_of_sale.join(', ') : 'Todos'"></div>
-          <div style="font-size:13px; color:#0f0f01;" x-text="c.category"></div>
+        <div class="row-grid row-grid--body">
+          <div class="row-grid__cell row-grid__cell--serial" x-text="c.serial"></div>
+          <div class="row-grid__cell" x-text="c.discount_pct + '%'"></div>
+          <div class="row-grid__cell" x-text="fmtCorta(c.valid_from) + ' – ' + fmtCorta(c.valid_to)"></div>
+          <div class="row-grid__cell" x-text="c.channel.map(ch => ch === 'web' ? 'Web' : 'Local').join(' + ')"></div>
+          <div class="row-grid__cell" x-text="c.points_of_sale ? c.points_of_sale.join(', ') : 'Todos'"></div>
+          <div class="row-grid__cell" x-text="c.category"></div>
           <div><span class="estado-badge" :class="'estado-' + c.estado" x-text="c.estado.charAt(0).toUpperCase() + c.estado.slice(1)"></span></div>
-          <div style="font-size:13px; color:#0f0f01;" x-text="c.veces_canjeado"></div>
+          <div class="row-grid__cell" x-text="c.veces_canjeado"></div>
         </div>
       </template>
 
-      <div x-show="cuponesFiltrados.length === 0" style="padding:24px; text-align:center; color:#6B7280; font-size:13px;">No hay cupones que coincidan.</div>
+      <div x-show="cuponesFiltrados.length === 0" class="empty-state">No hay cupones que coincidan.</div>
     </div>
 
-    <div style="font-size:12px; color:#6B7280; margin-top:14px;">Los vendedores de local no acceden a este listado: solo a la pantalla de validación.</div>
+    <div class="footnote">Los vendedores de local no acceden a este listado: solo a la pantalla de validación.</div>
   </div>
   </template>
 

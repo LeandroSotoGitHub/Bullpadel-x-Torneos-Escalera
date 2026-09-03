@@ -1,0 +1,80 @@
+.page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-layout { display: flex; gap: 28px; flex-wrap: wrap; }
+.form-fields { flex: 1 1 500px; display: flex; flex-direction: column; gap: 18px; }
+.form-row { display: flex; gap: 14px; flex-wrap: wrap; }
+.form-row > div { flex: 1 1 120px; }
+.form-row .field--wide { flex: 1 1 140px; }
+
+.channel-row { display: flex; gap: 10px; }
+.pos-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.usage-hint { font-size: 12px; color: #6B4E1D; font-style: italic; margin-top: 10px; }
+
+.header-block { margin-bottom: 24px; }
+.header-block__title { font-size: 26px; font-weight: 800; color: var(--color-black); }
+.header-block__subtitle { font-size: 14px; color: var(--color-muted); margin-top: 4px; }
+
+.mt-auto { margin-top: auto; }
+
+.preview-panel {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.preview-card {
+  background: var(--color-black);
+  border-radius: 16px;
+  padding: 22px 18px;
+  color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.preview-card__logo { height: 14px; width: auto; display: block; }
+.preview-card__discount { font-size: 38px; font-weight: 800; line-height: 1; }
+.preview-card__category { font-size: 13px; color: #C9CDD3; }
+.preview-card__divider { height: 1px; background: rgba(255,255,255,0.14); }
+.preview-card__validity { font-size: 12px; color: #C9CDD3; }
+.preview-card__channels { display: flex; gap: 8px; }
+.preview-card__channel-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-white);
+  background: var(--color-red);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.preview-card__serial {
+  font-family: monospace;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  color: var(--color-white);
+  background: rgba(255,255,255,0.08);
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.preview-hint { font-size: 12px; color: var(--color-muted); line-height: 1.5; }
+
+.result-box {
+  border: 1.5px solid var(--color-success);
+  background: var(--color-success-bg);
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 13px;
+  color: var(--color-success-dark);
+}
+
+.link-listado { font-size: 13px; text-align: center; }

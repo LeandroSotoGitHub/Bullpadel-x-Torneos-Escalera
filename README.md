@@ -19,6 +19,15 @@ Escalera. Contexto completo del proyecto en [`Contexto/context.md`](Contexto/con
   - `crear_cupon` / `listar_cupones` — requieren la clave de acceso MKT.
   - `validar_cupon` / `confirmar_canje` — sin clave, pero solo devuelven el resultado de un serial puntual (nunca el listado completo).
 
+## CSS
+
+Cada página HTML es solo markup + bindings de Alpine — nada de `<style>` ni `style=""`
+inline. Los estilos viven en `app/css/`:
+
+- **`base.css`** — reset, tipografía, variables de color (`--color-*`), estilos base de link/input. Se carga en las 5 páginas.
+- **`mkt-panel.css`** — componentes compartidos entre `crear-cupon.html` y `listado-cupones.html` (topbar, porton de clave MKT, card, pill, botón, toggle).
+- **`crear-cupon.css` / `listado-cupones.css` / `validar-cupon.css` / `tarjeta-digital.css` / `index.css`** — layout y componentes propios de cada página.
+
 ## Páginas
 
 | Archivo | Quién la usa | Acceso |

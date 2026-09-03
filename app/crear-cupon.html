@@ -5,73 +5,55 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nuevo cupón — Torneos Escalera x Bullpadel</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
-<style>
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: 'Manrope', system-ui, -apple-system, sans-serif; background: #EEF0F2; }
-  a { color: #C8102E; text-decoration: none; }
-  a:hover { color: #A10D25; }
-  input, select { font-family: inherit; }
-  .card { background: #FFFFFF; border: 1px solid #E1E4E9; border-radius: 12px; padding: 20px; }
-  .card-title { font-size: 12px; font-weight: 700; color: #0f0f01; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 12px; }
-  .field-label { font-size: 12px; color: #6B7280; margin-bottom: 6px; }
-  .field-input { width: 100%; border: 1px solid #D6DAE1; border-radius: 8px; padding: 9px 12px; background: #FBFBFC; font-size: 14px; color: #0f0f01; }
-  .pill { padding: 9px 16px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid transparent; user-select: none; }
-  .pill-off { background: #F2F3F5; color: #6B7280; }
-  .pill-on { background: #FBE9EB; border-color: #C8102E; color: #C8102E; }
-  .pill-solid-on { background: #C8102E; color: #ffffff; }
-  .pill-solid-off { background: #F2F3F5; color: #6B7280; }
-  .btn-primary { background: #C8102E; color: #ffffff; text-align: center; padding: 13px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; width: 100%; }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-  .toggle-wrap { display: flex; gap: 8px; background: #F2F3F5; padding: 4px; border-radius: 10px; width: fit-content; }
-  .toggle-opt { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; color: #6B7280; cursor: pointer; }
-  .toggle-opt.active { background: #ffffff; box-shadow: 0 1px 2px rgba(15,15,1,0.14); font-weight: 700; color: #0f0f01; }
-</style>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/mkt-panel.css">
+<link rel="stylesheet" href="css/crear-cupon.css">
 </head>
 <body>
 
-<div x-data="crearCupon()" x-init="init()" style="max-width:1000px; margin:0 auto; padding:32px 24px; min-height:100vh; display:flex; flex-direction:column;">
+<div x-data="crearCupon()" x-init="init()" class="page">
 
-  <div style="display:flex; align-items:center; gap:12px; margin-bottom:22px;">
-    <img src="assets/bullpadel-logo-negro.png" style="height:22px; width:auto; display:block;">
-    <div style="width:1px; height:20px; background:#D6DAE1;"></div>
-    <div style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:#6B7280;">&times; Torneos Escalera</div>
-    <div style="margin-left:auto; font-size:12px; font-weight:600; color:#6B7280; background:#EEF0F2; padding:6px 12px; border-radius:999px;">Panel interno &middot; MKT</div>
+  <div class="topbar">
+    <img src="assets/bullpadel-logo-negro.png" class="topbar__logo">
+    <div class="topbar__divider"></div>
+    <div class="topbar__brand">&times; Torneos Escalera</div>
+    <div class="topbar__tag">Panel interno &middot; MKT</div>
   </div>
 
   <!-- Portón de clave MKT -->
   <template x-if="!mktKey">
-    <div style="max-width:420px; margin:60px auto; text-align:center;" class="card">
-      <div style="font-size:18px; font-weight:800; color:#0f0f01; margin-bottom:6px;">Acceso MKT / comercial</div>
-      <div style="font-size:13px; color:#6B7280; margin-bottom:16px;">Ingresá la clave de acceso para crear cupones.</div>
-      <input type="password" x-model="keyInput" @keydown.enter="guardarKey()" placeholder="Clave de acceso" class="field-input" style="margin-bottom:12px;">
-      <div class="btn-primary" @click="guardarKey()">Ingresar</div>
-      <div x-show="authError" style="color:#C0392B; font-size:12px; margin-top:10px;" x-text="authError"></div>
+    <div class="key-gate">
+      <div class="key-gate__title">Acceso MKT / comercial</div>
+      <div class="key-gate__subtitle">Ingresá la clave de acceso para crear cupones.</div>
+      <input type="password" x-model="keyInput" @keydown.enter="guardarKey()" placeholder="Clave de acceso" class="field-input key-gate__input">
+      <div class="btn-primary btn-primary--block" @click="guardarKey()">Ingresar</div>
+      <div x-show="authError" class="key-gate__error" x-text="authError"></div>
     </div>
   </template>
 
   <template x-if="mktKey">
   <div>
-    <div style="margin-bottom:24px;">
-      <div style="font-size:26px; font-weight:800; color:#0f0f01;">Nuevo cupón</div>
-      <div style="font-size:14px; color:#6B7280; margin-top:4px;">Definí las variables del cupón. Al confirmar se genera un serial único.</div>
+    <div class="header-block">
+      <div class="header-block__title">Nuevo cupón</div>
+      <div class="header-block__subtitle">Definí las variables del cupón. Al confirmar se genera un serial único.</div>
     </div>
 
-    <div style="display:flex; gap:28px; flex-wrap:wrap;">
+    <div class="form-layout">
 
-      <div style="flex:1 1 500px; display:flex; flex-direction:column; gap:18px;">
+      <div class="form-fields">
 
         <div class="card">
           <div class="card-title">Descuento y vigencia</div>
-          <div style="display:flex; gap:14px; flex-wrap:wrap;">
-            <div style="flex:1 1 120px;">
+          <div class="form-row">
+            <div>
               <div class="field-label">Descuento (%)</div>
               <input type="number" min="1" max="100" x-model.number="discountPct" class="field-input">
             </div>
-            <div style="flex:1 1 140px;">
+            <div class="field--wide">
               <div class="field-label">Desde</div>
               <input type="date" x-model="validFrom" class="field-input">
             </div>
-            <div style="flex:1 1 140px;">
+            <div class="field--wide">
               <div class="field-label">Hasta</div>
               <input type="date" x-model="validTo" class="field-input">
             </div>
@@ -80,7 +62,7 @@
 
         <div class="card">
           <div class="card-title">Canal</div>
-          <div style="display:flex; gap:10px;">
+          <div class="channel-row">
             <div class="pill" :class="channelWeb ? 'pill-on' : 'pill-off'" @click="channelWeb = !channelWeb">Web</div>
             <div class="pill" :class="channelLocal ? 'pill-on' : 'pill-off'" @click="channelLocal = !channelLocal">Local</div>
           </div>
@@ -88,7 +70,7 @@
 
         <div class="card">
           <div class="card-title">Punto de venta</div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <div class="pos-row">
             <div class="pill" :class="posTodos ? 'pill-solid-on' : 'pill-solid-off'" @click="posTodos = true">Todos</div>
             <template x-for="p in puntosDeVenta" :key="p">
               <div class="pill" :class="(!posTodos && posSeleccionados.includes(p)) ? 'pill-solid-on' : 'pill-solid-off'"
@@ -112,45 +94,45 @@
             <div class="toggle-opt" :class="usageMode === 'unico_uso' ? 'active' : ''" @click="usageMode = 'unico_uso'">Único uso</div>
             <div class="toggle-opt" :class="usageMode === 'reutilizable' ? 'active' : ''" @click="usageMode = 'reutilizable'">Reutilizable</div>
           </div>
-          <div style="font-size:12px; color:#6B4E1D; font-style:italic; margin-top:10px;">Requiere validación comercial antes de activarse.</div>
+          <div class="usage-hint">Requiere validación comercial antes de activarse.</div>
         </div>
 
       </div>
 
-      <div style="width:280px; flex-shrink:0; display:flex; flex-direction:column; gap:14px;">
+      <div class="preview-panel">
         <div class="card-title">Vista previa</div>
 
-        <div style="background:#0f0f01; border-radius:16px; padding:22px 18px; color:#ffffff; display:flex; flex-direction:column; gap:14px;">
-          <img src="assets/bullpadel-logo-blanco.png" style="height:14px; width:auto; display:block;">
-          <div style="font-size:38px; font-weight:800; line-height:1;" x-text="(discountPct || 0) + '% OFF'"></div>
-          <div style="font-size:13px; color:#C9CDD3;" x-text="'En ' + category.toLowerCase()"></div>
-          <div style="height:1px; background:rgba(255,255,255,0.14);"></div>
-          <div style="font-size:12px; color:#C9CDD3;" x-text="'Válido ' + (validFrom ? fmtCorta(validFrom) : '—') + ' – ' + (validTo ? fmtCompleta(validTo) : '—')"></div>
-          <div style="display:flex; gap:8px;">
-            <div x-show="channelWeb" style="font-size:11px; font-weight:700; color:#ffffff; background:#C8102E; padding:4px 10px; border-radius:999px;">Web</div>
-            <div x-show="channelLocal" style="font-size:11px; font-weight:700; color:#ffffff; background:#C8102E; padding:4px 10px; border-radius:999px;">Local</div>
+        <div class="preview-card">
+          <img src="assets/bullpadel-logo-blanco.png" class="preview-card__logo">
+          <div class="preview-card__discount" x-text="(discountPct || 0) + '% OFF'"></div>
+          <div class="preview-card__category" x-text="'En ' + category.toLowerCase()"></div>
+          <div class="preview-card__divider"></div>
+          <div class="preview-card__validity" x-text="'Válido ' + (validFrom ? fmtCorta(validFrom) : '—') + ' – ' + (validTo ? fmtCompleta(validTo) : '—')"></div>
+          <div class="preview-card__channels">
+            <div x-show="channelWeb" class="preview-card__channel-tag">Web</div>
+            <div x-show="channelLocal" class="preview-card__channel-tag">Local</div>
           </div>
-          <div style="font-family: monospace; font-size:13px; letter-spacing:0.05em; color:#ffffff; background:rgba(255,255,255,0.08); padding:8px 10px; border-radius:8px; text-align:center;">
+          <div class="preview-card__serial">
             <span x-text="resultado ? resultado.serial : 'Se asigna al confirmar'"></span>
           </div>
         </div>
 
-        <div style="font-size:12px; color:#6B7280; line-height:1.5;">Así la recibe la jugadora. El serial se asigna al confirmar.</div>
+        <div class="preview-hint">Así la recibe la jugadora. El serial se asigna al confirmar.</div>
 
-        <button class="btn-primary" style="margin-top:auto;" :disabled="loading || !channelWeb && !channelLocal" @click="generar()">
+        <button class="btn-primary btn-primary--block mt-auto" :disabled="loading || !channelWeb && !channelLocal" @click="generar()">
           <span x-text="loading ? 'Generando…' : 'Generar cupón'"></span>
         </button>
 
-        <div x-show="errorMsg" style="color:#C0392B; font-size:12px;" x-text="errorMsg"></div>
+        <div x-show="errorMsg" class="text-error" x-text="errorMsg"></div>
 
         <template x-if="resultado">
-          <div style="border:1.5px solid #1E8E5A; background:#E6F6EC; border-radius:12px; padding:14px; font-size:13px; color:#166A44;">
+          <div class="result-box">
             Cupón <strong x-text="resultado.serial"></strong> creado.
             <a :href="'tarjeta-digital.html?serial=' + resultado.serial" target="_blank">Ver tarjeta digital →</a>
           </div>
         </template>
 
-        <a href="listado-cupones.html" style="font-size:13px; text-align:center;">Ver listado completo →</a>
+        <a href="listado-cupones.html" class="link-listado">Ver listado completo →</a>
       </div>
 
     </div>

@@ -1,0 +1,139 @@
+.page {
+  max-width: 420px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--color-bg-alt);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 20px 20px 16px 20px;
+  background: var(--color-black);
+}
+.header__logo { height: 18px; width: auto; display: block; margin-bottom: 10px; }
+.header__title { font-size: 20px; font-weight: 800; color: var(--color-white); }
+.header__subtitle {
+  font-size: 12px;
+  color: #C9CDD3;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pos-select { background: transparent; color: #C9CDD3; border: none; font-size: 12px; font-family: inherit; }
+.pos-select option { color: var(--color-black); }
+
+.content { padding: 20px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1; }
+
+.field-label { font-size: 12px; color: var(--color-muted); margin-bottom: 6px; font-weight: 600; }
+.serial-input {
+  border: 1.5px solid var(--color-black);
+  border-radius: 10px;
+  padding: 13px 14px;
+  background: var(--color-white);
+  font-size: 15px;
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--color-black);
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  text-align: center;
+  background: var(--color-red);
+  color: var(--color-white);
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+}
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.divider { height: 1px; background: var(--color-border); margin: 6px 0; }
+
+.status-card {
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.status-card__head { display: flex; align-items: center; gap: 10px; }
+.status-card__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.status-card__title { font-size: 16px; font-weight: 800; }
+.status-card__details { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.status-card__message { font-size: 13px; }
+.status-card__blocked { text-align: center; padding: 12px; border-radius: 9px; font-size: 14px; font-weight: 700; margin-top: 4px; }
+
+.status-card--activo { border: 1.5px solid var(--color-success); background: var(--color-success-bg); }
+.status-card--activo .status-card__icon { background: var(--color-success); }
+.status-card--activo .status-card__title { color: var(--color-success-dark); }
+.status-card--activo .status-card__details { color: #1F5B3F; }
+
+.status-card--vencido { border: 1.5px solid var(--color-danger); background: var(--color-danger-bg); }
+.status-card--vencido .status-card__icon { background: var(--color-danger); }
+.status-card--vencido .status-card__title { color: var(--color-danger-dark); }
+.status-card--vencido .status-card__message { color: var(--color-danger-dark); }
+.status-card--vencido .status-card__blocked { background: #E3C9C6; color: var(--color-danger-dark); }
+
+.status-card--usado { border: 1.5px solid #9AA1AC; background: var(--color-neutral-bg); }
+.status-card--usado .status-card__icon { background: var(--color-muted); }
+.status-card--usado .status-card__title { color: #3F4650; }
+.status-card--usado .status-card__message { color: #3F4650; }
+.status-card--usado .status-card__blocked { background: #DADEE2; color: #3F4650; }
+
+.status-card--not-found {
+  border: 1.5px solid #9AA1AC;
+  background: var(--color-neutral-bg);
+  border-radius: 14px;
+  padding: 18px;
+  font-size: 13px;
+  color: #3F4650;
+  text-align: center;
+}
+
+.btn-confirm {
+  text-align: center;
+  background: var(--color-success);
+  color: var(--color-white);
+  padding: 12px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 4px;
+  cursor: pointer;
+}
+.btn-confirm--loading { opacity: 0.6; }
+
+.toast-success {
+  border: 1.5px solid var(--color-success);
+  background: var(--color-success-bg);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 13px;
+  color: var(--color-success-dark);
+  text-align: center;
+  font-weight: 700;
+}
+
+.footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--color-border);
+  font-size: 11px;
+  color: var(--color-muted);
+  line-height: 1.5;
+}
