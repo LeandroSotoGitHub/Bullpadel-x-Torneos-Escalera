@@ -16,25 +16,22 @@
   <div class="header">
     <img src="assets/bullpadel-logo-blanco.png" class="header__logo">
     <div class="header__title">Validar cupón</div>
-    <div class="header__subtitle">
-      Local:
-      <select class="pos-select" x-model="puntoVenta" @change="guardarPuntoVenta()">
-        <template x-for="p in puntosDeVenta" :key="p">
-          <option :value="p" x-text="p"></option>
-        </template>
-      </select>
-      &middot; Torneos Escalera
-    </div>
+    <div class="header__brand">Torneos Escalera</div>
+    <button type="button" class="local-badge" :class="!localConfirmado ? 'local-badge--unset' : ''" @click="abrirModalLocal()">
+      <span class="local-badge__icon">📍</span>
+      <span class="local-badge__text" x-text="localConfirmado ? puntoVenta : 'Elegir local (obligatorio)'"></span>
+      <span class="local-badge__hint" x-text="localConfirmado ? 'Cambiar' : 'Obligatorio'"></span>
+    </button>
   </div>
 
   <div class="content">
 
     <div>
       <div class="field-label">Serial del cupón</div>
-      <input type="text" x-model="serial" @keydown.enter="validar()" placeholder="BP-2609-A1" class="serial-input">
+      <input type="text" x-model="serial" @keydown.enter="intentarValidar()" placeholder="BP-2609-A1" class="serial-input">
     </div>
 
-    <button class="btn-primary" :disabled="!serial || validando" @click="validar()">
+    <button class="btn-primary" :disabled="!serial || validando" @click="intentarValidar()">
       <span x-text="validando ? 'Validando…' : 'Validar'"></span>
     </button>
 
@@ -57,6 +54,7 @@
           <div x-text="(cupon.usage_mode === 'reutilizable' ? 'Reutilizable' : 'Único uso')"></div>
           <div x-text="'Válido hasta ' + fmtCompleta(cupon.valid_to)"></div>
         </div>
+        <div class="status-card__confirm-local">Se va a registrar en <strong x-text="puntoVenta"></strong></div>
         <div class="btn-confirm" :class="canjeando ? 'btn-confirm--loading' : ''" @click="confirmarCanje()">
           <span x-text="canjeando ? 'Registrando…' : 'Confirmar canje'"></span>
         </div>
@@ -109,6 +107,23 @@
     El vendedor solo valida. La carga del % en el ERP la confirma el encargado habilitado.
   </div>
 
+  <!-- Modal obligatorio: elegir local antes de poder validar/confirmar -->
+  <template x-if="mostrarModalLocal">
+    <div class="modal-overlay-local">
+      <div class="modal-local">
+        <div class="modal-local__icon">📍</div>
+        <div class="modal-local__title">¿En qué local estás?</div>
+        <div class="modal-local__subtitle">Es obligatorio para validar cupones y registrar los canjes en el local correcto.</div>
+        <div class="modal-local__options">
+          <template x-for="p in puntosDeVenta" :key="p">
+            <div class="modal-local__option" :class="puntoVenta === p ? 'active' : ''" @click="puntoVenta = p" x-text="p"></div>
+          </template>
+        </div>
+        <button class="btn-primary" @click="confirmarLocal()">Confirmar</button>
+      </div>
+    </div>
+  </template>
+
 </div>
 
 <script type="module">
@@ -120,6 +135,9 @@
   Alpine.data('validarCupon', () => ({
       puntosDeVenta: PUNTOS_DE_VENTA,
       puntoVenta: PUNTOS_DE_VENTA[0],
+      localConfirmado: false,
+      mostrarModalLocal: false,
+      accionPendiente: null,
       serial: '',
       cupon: null,
       noEncontrado: false,
@@ -138,12 +156,34 @@
         const serialDesdeQr = (params.get('serial') || '').trim();
         if (serialDesdeQr) {
           this.serial = serialDesdeQr.toUpperCase();
-          this.validar();
+          this.intentarValidar();
         }
       },
 
-      guardarPuntoVenta() {
+      abrirModalLocal() {
+        this.mostrarModalLocal = true;
+      },
+
+      confirmarLocal() {
         try { localStorage.setItem(POS_STORAGE_KEY, this.puntoVenta); } catch {}
+        this.localConfirmado = true;
+        this.mostrarModalLocal = false;
+
+        if (this.accionPendiente) {
+          const accion = this.accionPendiente;
+          this.accionPendiente = null;
+          accion();
+        }
+      },
+
+      intentarValidar() {
+        if (!this.serial) return;
+        if (!this.localConfirmado) {
+          this.accionPendiente = () => this.validar();
+          this.mostrarModalLocal = true;
+          return;
+        }
+        this.validar();
       },
 
       fmtCompleta: formatFechaCompleta,

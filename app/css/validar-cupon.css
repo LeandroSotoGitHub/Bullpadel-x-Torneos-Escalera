@@ -14,17 +14,31 @@
 }
 .header__logo { height: 18px; width: auto; display: block; margin-bottom: 10px; }
 .header__title { font-size: 20px; font-weight: 800; color: var(--color-white); }
-.header__subtitle {
-  font-size: 12px;
-  color: #C9CDD3;
-  margin-top: 2px;
+.header__brand { font-size: 12px; color: #7A8088; margin-top: 2px; margin-bottom: 12px; }
+
+.local-badge {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 10px;
+  width: 100%;
+  background: rgba(255,255,255,0.08);
+  border: 1.5px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: var(--color-white);
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
 }
-
-.pos-select { background: transparent; color: #C9CDD3; border: none; font-size: 12px; font-family: inherit; }
-.pos-select option { color: var(--color-black); }
+.local-badge:hover { background: rgba(255,255,255,0.14); }
+.local-badge--unset {
+  background: rgba(200,16,46,0.16);
+  border-color: rgba(200,16,46,0.6);
+}
+.local-badge__icon { font-size: 16px; flex-shrink: 0; }
+.local-badge__text { flex: 1 1 0; font-size: 14px; font-weight: 700; }
+.local-badge__hint { font-size: 11px; font-weight: 700; color: #C9CDD3; flex-shrink: 0; }
+.local-badge--unset .local-badge__hint { color: #FF8A8A; }
 
 .content { padding: 20px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1; }
 
@@ -84,6 +98,14 @@
 .status-card--activo .status-card__icon { background: var(--color-success); }
 .status-card--activo .status-card__title { color: var(--color-success-dark); }
 .status-card--activo .status-card__details { color: #1F5B3F; }
+.status-card__confirm-local {
+  font-size: 12px;
+  color: #1F5B3F;
+  background: rgba(30,142,90,0.12);
+  border-radius: 6px;
+  padding: 6px 8px;
+  text-align: center;
+}
 
 .status-card--vencido { border: 1.5px solid var(--color-danger); background: var(--color-danger-bg); }
 .status-card--vencido .status-card__icon { background: var(--color-danger); }
@@ -137,6 +159,46 @@
   font-size: 11px;
   color: var(--color-muted);
   line-height: 1.5;
+}
+
+/* Modal obligatorio de seleccion de local */
+.modal-overlay-local {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,15,1,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 60;
+}
+.modal-local {
+  background: var(--color-white);
+  border-radius: 18px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+.modal-local__icon { font-size: 32px; margin-bottom: 8px; }
+.modal-local__title { font-size: 18px; font-weight: 800; color: var(--color-black); margin-bottom: 6px; }
+.modal-local__subtitle { font-size: 13px; color: var(--color-muted); margin-bottom: 18px; line-height: 1.4; }
+.modal-local__options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+.modal-local__option {
+  padding: 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--color-border-input);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-black);
+  cursor: pointer;
+}
+.modal-local__option.active {
+  border-color: var(--color-red);
+  background: #FBE9EB;
+  color: var(--color-red);
 }
 
 /* Vista desktop: la pantalla mobile queda flotando como una tarjeta centrada,
