@@ -15,8 +15,8 @@ Escalera. Contexto completo del proyecto en [`Contexto/context.md`](Contexto/con
 - **Backend:** Supabase (Postgres), proyecto `torneos-escalera-cupones` (org `LeandroSotoGitHub's Org`, región `sa-east-1`).
 - **Control de acceso:** sin sistema de cuentas. Las tablas `coupons`, `redemptions` y
   `app_secrets` tienen RLS habilitado sin políticas (bloqueadas a nivel de base de datos).
-  Todo el acceso pasa por 6 funciones RPC `security definer`:
-  - `crear_cupon` / `listar_cupones` / `editar_cupon` / `eliminar_cupon` — requieren la clave de acceso MKT.
+  Todo el acceso pasa por 7 funciones RPC `security definer`:
+  - `crear_cupon` / `crear_cupones_lote` / `listar_cupones` / `editar_cupon` / `eliminar_cupon` — requieren la clave de acceso MKT.
   - `validar_cupon` / `confirmar_canje` — sin clave, pero solo devuelven el resultado de un serial puntual (nunca el listado completo).
 
 ## CSS
@@ -41,6 +41,12 @@ inline. Los estilos viven en `app/css/`:
 La clave MKT se pide una vez y se guarda en `sessionStorage` del navegador — nunca
 está en el código. **No se versiona en git.**
 
+`crear-cupon.html` soporta generar varios cupones de una sola vez (mismas
+condiciones, serial propio cada uno) y descargarlos todos juntos como un
+`.zip` de tarjetas PNG. El ZIP se arma en el navegador con JSZip, reusando
+`tarjeta-digital.html` — se carga un serial por vez en un iframe oculto y se
+reaprovecha su mismo render de tarjeta + QR (evita duplicar esa lógica).
+
 ## Correr local
 
 Necesita un servidor estático (no funciona con `file://` porque usa ES modules):
@@ -54,8 +60,11 @@ para levantarlo automáticamente desde el Browser pane de Claude Code.
 
 ## Deploy
 
-Cloudflare Pages, apuntando el build directory a `app/` (sin build command, framework preset "None").
-El plan gratuito de Cloudflare Pages permite uso comercial explícitamente.
+Vercel, proyecto `bullpadel-torneos-escalera`, conectado al repo de GitHub
+(rama `main`, root directory `app/`). Cada `git push` a `main` despliega
+solo — no hace falta subir archivos a mano.
+
+Sitio en vivo: https://bullpadel-torneos-escalera.vercel.app
 
 ## Pendiente
 

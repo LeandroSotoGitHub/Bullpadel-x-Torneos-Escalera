@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/mkt-panel.css">
 <link rel="stylesheet" href="css/crear-cupon.css">
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
 <body>
 
@@ -63,6 +64,12 @@
               <input type="date" x-model="validTo" class="field-input">
             </div>
           </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Cantidad</div>
+          <input type="number" min="1" max="100" x-model.number="cantidad" class="field-input field--narrow">
+          <div class="usage-hint">Genera varios cupones con estas mismas condiciones, cada uno con su propio serial.</div>
         </div>
 
         <div class="card">
@@ -126,15 +133,30 @@
         <div class="preview-hint">Así la recibe la jugadora. El serial se asigna al confirmar.</div>
 
         <button class="btn-primary btn-primary--block mt-auto" :disabled="loading || !channelWeb && !channelLocal" @click="generar()">
-          <span x-text="loading ? 'Generando…' : 'Generar cupón'"></span>
+          <span x-text="loading ? 'Generando…' : (cantidad > 1 ? 'Generar ' + cantidad + ' cupones' : 'Generar cupón')"></span>
         </button>
 
         <div x-show="errorMsg" class="text-error" x-text="errorMsg"></div>
 
-        <template x-if="resultado">
+        <template x-if="resultados.length === 1">
           <div class="result-box">
-            Cupón <strong x-text="resultado.serial"></strong> creado.
-            <a :href="'tarjeta-digital.html?serial=' + resultado.serial" target="_blank">Ver tarjeta digital →</a>
+            Cupón <strong x-text="resultados[0].serial"></strong> creado.
+            <a :href="'tarjeta-digital.html?serial=' + resultados[0].serial" target="_blank">Ver tarjeta digital →</a>
+          </div>
+        </template>
+
+        <template x-if="resultados.length > 1">
+          <div class="result-box">
+            <div class="result-box__title" x-text="resultados.length + ' cupones creados.'"></div>
+            <div class="result-serial-list">
+              <template x-for="r in resultados" :key="r.id">
+                <div x-text="r.serial"></div>
+              </template>
+            </div>
+            <button class="btn-primary btn-primary--block result-zip-btn" :disabled="zipLoading" @click="descargarZip()">
+              <span x-text="zipLoading ? ('Generando ' + zipProgreso + '/' + resultados.length + '…') : '⤓ Descargar ZIP'"></span>
+            </button>
+            <div x-show="zipError" class="text-error result-zip-error" x-text="zipError"></div>
           </div>
         </template>
 
@@ -167,9 +189,13 @@
       posSeleccionados: [],
       category: 'Bolsos',
       usageMode: 'reutilizable',
+      cantidad: 1,
       loading: false,
       errorMsg: '',
-      resultado: null,
+      resultados: [],
+      zipLoading: false,
+      zipProgreso: 0,
+      zipError: '',
 
       init() {
         this.mktKey = getMktKey();
@@ -206,15 +232,18 @@
       async generar() {
         this.loading = true;
         this.errorMsg = '';
-        this.resultado = null;
+        this.resultados = [];
+        this.zipError = '';
 
         const channel = [];
         if (this.channelWeb) channel.push('web');
         if (this.channelLocal) channel.push('local');
 
         const points_of_sale = this.posTodos ? null : this.posSeleccionados;
+        const cantidad = Math.max(1, Math.min(100, this.cantidad || 1));
 
-        const { data, error } = await supabase.rpc('crear_cupon', {
+        const rpc = cantidad > 1 ? 'crear_cupones_lote' : 'crear_cupon';
+        const params = {
           p_mkt_key: this.mktKey,
           p_discount_pct: this.discountPct,
           p_category: this.category,
@@ -223,7 +252,10 @@
           p_valid_from: this.validFrom,
           p_valid_to: this.validTo,
           p_usage_mode: this.usageMode,
-        });
+        };
+        if (cantidad > 1) params.p_cantidad = cantidad;
+
+        const { data, error } = await supabase.rpc(rpc, params);
 
         this.loading = false;
 
@@ -237,7 +269,74 @@
           return;
         }
 
-        this.resultado = data[0];
+        this.resultados = data;
+      },
+
+      async descargarZip() {
+        this.zipLoading = true;
+        this.zipProgreso = 0;
+        this.zipError = '';
+
+        try {
+          const zip = new window.JSZip();
+
+          for (const r of this.resultados) {
+            const blob = await this.generarImagenTarjeta(r.serial);
+            zip.file(`cupon-${r.serial}.png`, blob);
+            this.zipProgreso++;
+          }
+
+          const contenido = await zip.generateAsync({ type: 'blob' });
+          const url = URL.createObjectURL(contenido);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `cupones-${new Date().toISOString().slice(0, 10)}.zip`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          this.zipError = 'No se pudo generar el ZIP. Probá de nuevo.';
+        } finally {
+          this.zipLoading = false;
+        }
+      },
+
+      // Renderiza tarjeta-digital.html en un iframe oculto (mismo origen) y reusa
+      // su logica de armado de tarjeta + QR para generar el PNG de un serial puntual.
+      generarImagenTarjeta(serial) {
+        return new Promise((resolve, reject) => {
+          const iframe = document.createElement('iframe');
+          iframe.className = 'zip-iframe-oculto';
+          iframe.src = `tarjeta-digital.html?serial=${encodeURIComponent(serial)}`;
+
+          const limpiar = () => iframe.remove();
+          const timeout = setTimeout(() => {
+            limpiar();
+            reject(new Error('timeout'));
+          }, 15000);
+
+          iframe.onload = () => {
+            const esperar = () => {
+              const el = iframe.contentDocument && iframe.contentDocument.querySelector('[x-data]');
+              const datos = el && iframe.contentWindow.Alpine && iframe.contentWindow.Alpine.$data(el);
+              if (datos && datos.cupon && datos.qrSvg) {
+                datos.generarCanvas()
+                  .then(canvas => canvas.toBlob(blob => {
+                    clearTimeout(timeout);
+                    limpiar();
+                    resolve(blob);
+                  }, 'image/png'))
+                  .catch(err => { clearTimeout(timeout); limpiar(); reject(err); });
+              } else {
+                setTimeout(esperar, 100);
+              }
+            };
+            esperar();
+          };
+
+          document.body.appendChild(iframe);
+        });
       },
   }));
 

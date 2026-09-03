@@ -8,6 +8,7 @@
 }
 
 .form-layout { display: flex; gap: 28px; flex-wrap: wrap; }
+.field--narrow { max-width: 140px; }
 .form-fields { flex: 1 1 500px; display: flex; flex-direction: column; gap: 18px; }
 
 .usage-hint { font-size: 12px; color: #6B4E1D; font-style: italic; margin-top: 10px; }
@@ -71,5 +72,26 @@
   font-size: 13px;
   color: var(--color-success-dark);
 }
+.result-box__title { font-weight: 700; margin-bottom: 8px; }
+.result-serial-list {
+  max-height: 140px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.result-zip-btn { margin-top: 10px; }
+.result-zip-error { margin-top: 6px; }
 
 .link-listado { font-size: 13px; text-align: center; }
+
+.zip-iframe-oculto {
+  position: fixed;
+  top: -9999px;
+  left: -9999px;
+  width: 400px;
+  height: 650px;
+  border: 0;
+}

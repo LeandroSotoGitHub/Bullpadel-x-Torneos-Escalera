@@ -152,13 +152,16 @@
           : new Promise(resolve => { img.onload = resolve; img.onerror = resolve; })));
       },
 
+      async generarCanvas() {
+        return window.html2canvas(this.$refs.tarjeta, { backgroundColor: null, scale: 2 });
+      },
+
       async descargarTarjeta() {
         this.descargando = true;
         this.descargaError = '';
 
         try {
-          const nodo = this.$refs.tarjeta;
-          const canvas = await window.html2canvas(nodo, { backgroundColor: null, scale: 2 });
+          const canvas = await this.generarCanvas();
           const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
           const nombreArchivo = `cupon-${this.cupon.serial}.png`;
           const archivo = new File([blob], nombreArchivo, { type: 'image/png' });
